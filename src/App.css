@@ -86,9 +86,20 @@
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.post-card:hover {
+.post-card--link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.post-card--link:hover {
   transform: translateY(-3px);
   border-color: var(--accent-border);
+}
+
+.post-card--link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .post-card--featured {
@@ -194,6 +205,103 @@
 
 .post-card--featured .post-card__text {
   -webkit-line-clamp: 5;
+}
+
+.post-card__cta {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.shell--article {
+  max-width: 46rem;
+}
+
+.breadcrumb {
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.breadcrumb a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.article__header {
+  margin-bottom: 1.5rem;
+}
+
+.article__date {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.article__header h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.article__excerpt {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.article__cover {
+  margin-bottom: 1.75rem;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  aspect-ratio: 16 / 9;
+  background: var(--code-bg);
+}
+
+.article__cover .post-card__svg,
+.article__cover .post-card__img {
+  width: 100%;
+  height: 100%;
+}
+
+.article__body p {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.article__footer {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+.article__footer a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.article__footer a:hover {
+  text-decoration: underline;
 }
 
 .blog__footer {

@@ -9,24 +9,31 @@
     "type": "git",
     "url": "https://github.com/zerops-recipe-apps/strapi-react-frontend.git"
   },
-  "keywords": ["strapi", "react", "vite", "zerops", "headless-cms"],
+  "keywords": [
+    "strapi",
+    "react",
+    "vite",
+    "zerops",
+    "headless-cms"
+  ],
   "engines": {
     "node": ">=22.0.0"
   },
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && cp dist/index.html dist/404.html",
     "preview": "vite preview"
   },
   "dependencies": {
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-router-dom": "7.9.4"
   },
   "devDependencies": {
+    "@types/node": "22.15.21",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "@types/node": "22.15.21",
     "@vitejs/plugin-react": "6.0.4",
     "typescript": "5.9.3",
     "vite": "8.1.5"
