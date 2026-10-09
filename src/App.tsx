@@ -19,6 +19,7 @@ type BlogPost = {
   excerpt: string
   body: string
   publishedAt?: string
+  coverUrl?: string | null
   cover?: StrapiMedia | null
 }
 
@@ -31,15 +32,18 @@ function entityFields<T extends Record<string, unknown>>(raw: Record<string, unk
   return (raw.attributes ?? raw) as T
 }
 
-function mediaUrl(media: StrapiMedia | null | undefined): string | undefined {
-  const url = media?.url
-  if (!url) {
+function absoluteAssetUrl(pathOrUrl: string | null | undefined): string | undefined {
+  if (!pathOrUrl) {
     return undefined
   }
-  if (url.startsWith('http')) {
-    return url
+  if (pathOrUrl.startsWith('http')) {
+    return pathOrUrl
   }
-  return `${apiBase.replace(/\/$/, '')}${url}`
+  return `${apiBase.replace(/\/$/, '')}${pathOrUrl}`
+}
+
+function postCoverUrl(post: BlogPost): string | undefined {
+  return absoluteAssetUrl(post.cover?.url) ?? absoluteAssetUrl(post.coverUrl)
 }
 
 function formatDate(iso?: string) {
@@ -72,7 +76,7 @@ async function fetchJson(path: string) {
 }
 
 function PostCard({ post, featured = false }: { post: BlogPost; featured?: boolean }) {
-  const image = mediaUrl(post.cover)
+  const image = postCoverUrl(post)
   const date = formatDate(post.publishedAt)
 
   return (
