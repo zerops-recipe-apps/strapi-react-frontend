@@ -6,11 +6,20 @@ type SiteInfo = {
   description: string
 }
 
+type StrapiMedia = {
+  url?: string
+  alternativeText?: string | null
+  width?: number
+  height?: number
+}
+
 type BlogPost = {
   title: string
   slug: string
   excerpt: string
   body: string
+  publishedAt?: string
+  cover?: StrapiMedia | null
 }
 
 const apiBase = import.meta.env.VITE_API_URL ?? ''
@@ -19,8 +28,29 @@ function entityFields<T extends Record<string, unknown>>(raw: Record<string, unk
   if (!raw) {
     return undefined
   }
-  const data = (raw.attributes ?? raw) as T
-  return data
+  return (raw.attributes ?? raw) as T
+}
+
+function mediaUrl(media: StrapiMedia | null | undefined): string | undefined {
+  const url = media?.url
+  if (!url) {
+    return undefined
+  }
+  if (url.startsWith('http')) {
+    return url
+  }
+  return `${apiBase.replace(/\/$/, '')}${url}`
+}
+
+function formatDate(iso?: string) {
+  if (!iso) {
+    return null
+  }
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 async function fetchJson(path: string) {
@@ -41,6 +71,29 @@ async function fetchJson(path: string) {
   return res.json()
 }
 
+function PostCard({ post, featured = false }: { post: BlogPost; featured?: boolean }) {
+  const image = mediaUrl(post.cover)
+  const date = formatDate(post.publishedAt)
+
+  return (
+    <article className={`post-card${featured ? ' post-card--featured' : ''}`}>
+      <div className="post-card__media">
+        {image ? (
+          <img src={image} alt={post.cover?.alternativeText ?? post.title} loading="lazy" decoding="async" />
+        ) : (
+          <div className="post-card__placeholder" aria-hidden />
+        )}
+      </div>
+      <div className="post-card__body">
+        {date && <time className="post-card__date" dateTime={post.publishedAt}>{date}</time>}
+        <h3>{post.title}</h3>
+        <p className="post-card__excerpt">{post.excerpt}</p>
+        <p className="post-card__text">{post.body}</p>
+      </div>
+    </article>
+  )
+}
+
 export default function App() {
   const [site, setSite] = useState<SiteInfo | null>(null)
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -50,7 +103,7 @@ export default function App() {
   useEffect(() => {
     Promise.all([
       fetchJson('/api/site-info'),
-      fetchJson('/api/blog-posts?sort=publishedAt:desc'),
+      fetchJson('/api/blog-posts?populate=cover&sort=publishedAt:desc'),
     ])
       .then(([siteJson, postsJson]) => {
         const siteData = entityFields<SiteInfo>(siteJson?.data as Record<string, unknown>)
@@ -69,48 +122,53 @@ export default function App() {
       .finally(() => setLoading(false))
   }, [])
 
+  const [featured, ...rest] = posts
+
   return (
-    <main className="page">
-      <header>
-        <p className="eyebrow">Strapi + React on Zerops</p>
+    <div className="shell">
+      <header className="hero">
+        <p className="hero__eyebrow">Strapi + React on Zerops</p>
         <h1>{site?.title ?? 'Headless CMS demo'}</h1>
-        {site?.description && <p className="lede">{site.description}</p>}
+        {site?.description && <p className="hero__lede">{site.description}</p>}
       </header>
 
       {loading && <p className="status">Loading content from Strapi…</p>}
       {error && (
-        <p className="status error">
+        <p className="status status--error">
           Could not load content from <code>{apiBase || '(set VITE_API_URL)'}</code>: {error}
         </p>
       )}
 
       {!loading && !error && (
-        <section className="posts" aria-labelledby="blog-heading">
-          <h2 id="blog-heading">Blog</h2>
+        <section className="blog" aria-labelledby="blog-heading">
+          <div className="blog__head">
+            <h2 id="blog-heading">Latest posts</h2>
+            <p className="blog__sub">Images and copy are managed in Strapi.</p>
+          </div>
+
           {posts.length === 0 ? (
             <p className="status">No published blog posts yet. Add some in Strapi admin.</p>
           ) : (
-            <ul className="post-list">
-              {posts.map((post) => (
-                <li key={post.slug}>
-                  <article className="card">
-                    <h3>{post.title}</h3>
-                    <p className="excerpt">{post.excerpt}</p>
-                    <p className="body">{post.body}</p>
-                  </article>
-                </li>
-              ))}
-            </ul>
+            <div className="blog__layout">
+              {featured && <PostCard post={featured} featured />}
+              {rest.length > 0 && (
+                <div className="blog__grid">
+                  {rest.map((post) => (
+                    <PostCard key={post.slug} post={post} />
+                  ))}
+                </div>
+              )}
+            </div>
           )}
-          <p className="hint">
-            Edit posts in Strapi admin at{' '}
+
+          <footer className="blog__footer">
+            <span>Edit posts and cover images in</span>
             <a href={`${apiBase}/admin`} target="_blank" rel="noreferrer">
-              {apiBase}/admin
+              Strapi admin
             </a>
-            , then refresh this page.
-          </p>
+          </footer>
         </section>
       )}
-    </main>
+    </div>
   )
 }
