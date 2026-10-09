@@ -17,8 +17,17 @@ export default function App() {
     const url = `${apiBase.replace(/\/$/, '')}/api/site-info`
     fetch(url)
       .then(async (res) => {
+        const contentType = res.headers.get('content-type') ?? ''
         if (!res.ok) {
-          throw new Error(`Strapi returned ${res.status}`)
+          const body = contentType.includes('application/json')
+            ? JSON.stringify(await res.json())
+            : await res.text()
+          throw new Error(`Strapi returned ${res.status}${body ? `: ${body.slice(0, 120)}` : ''}`)
+        }
+        if (!contentType.includes('application/json')) {
+          throw new Error(
+            'Expected JSON from Strapi. If VITE_API_URL was missing at build time, the app may be calling this host instead of the Strapi API.',
+          )
         }
         const json = await res.json()
         const raw = json?.data as Record<string, unknown> | undefined
