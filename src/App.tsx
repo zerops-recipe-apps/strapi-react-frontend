@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
-import coverDeploy from './assets/covers/deploy-strapi-on-zerops.svg?url'
-import coverHeadless from './assets/covers/headless-cms-react-spa.svg?url'
-import coverDraft from './assets/covers/draft-to-published.svg?url'
+import { PostCover } from './components/PostCover'
 import './App.css'
 
 type SiteInfo = {
@@ -28,12 +26,6 @@ type BlogPost = {
 
 const apiBase = import.meta.env.VITE_API_URL ?? ''
 
-const DEMO_COVER_BY_SLUG: Record<string, string> = {
-  'deploy-strapi-on-zerops': coverDeploy,
-  'headless-cms-react-spa': coverHeadless,
-  'draft-to-published': coverDraft,
-}
-
 function entityFields<T extends Record<string, unknown>>(raw: Record<string, unknown> | undefined): T | undefined {
   if (!raw) {
     return undefined
@@ -52,11 +44,7 @@ function absoluteAssetUrl(pathOrUrl: string | null | undefined): string | undefi
 }
 
 function postCoverUrl(post: BlogPost): string | undefined {
-  const fromApi = absoluteAssetUrl(post.cover?.url) ?? absoluteAssetUrl(post.coverUrl)
-  if (fromApi) {
-    return fromApi
-  }
-  return DEMO_COVER_BY_SLUG[post.slug]
+  return absoluteAssetUrl(post.cover?.url) ?? absoluteAssetUrl(post.coverUrl)
 }
 
 function formatDate(iso?: string) {
@@ -89,17 +77,13 @@ async function fetchJson(path: string) {
 }
 
 function PostCard({ post, featured = false }: { post: BlogPost; featured?: boolean }) {
-  const image = postCoverUrl(post)
+  const remoteCover = postCoverUrl(post)
   const date = formatDate(post.publishedAt)
 
   return (
     <article className={`post-card${featured ? ' post-card--featured' : ''}`}>
       <div className="post-card__media">
-        {image ? (
-          <img src={image} alt={post.cover?.alternativeText ?? post.title} loading="lazy" decoding="async" />
-        ) : (
-          <div className="post-card__placeholder" aria-hidden />
-        )}
+        <PostCover slug={post.slug} title={post.cover?.alternativeText ?? post.title} remoteUrl={remoteCover} />
       </div>
       <div className="post-card__body">
         {date && <time className="post-card__date" dateTime={post.publishedAt}>{date}</time>}
