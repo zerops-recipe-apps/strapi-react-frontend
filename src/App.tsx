@@ -25,6 +25,12 @@ type BlogPost = {
 
 const apiBase = import.meta.env.VITE_API_URL ?? ''
 
+const DEMO_COVER_BY_SLUG: Record<string, string> = {
+  'deploy-strapi-on-zerops': '/covers/deploy-strapi-on-zerops.svg',
+  'headless-cms-react-spa': '/covers/headless-cms-react-spa.svg',
+  'draft-to-published': '/covers/draft-to-published.svg',
+}
+
 function entityFields<T extends Record<string, unknown>>(raw: Record<string, unknown> | undefined): T | undefined {
   if (!raw) {
     return undefined
@@ -43,7 +49,11 @@ function absoluteAssetUrl(pathOrUrl: string | null | undefined): string | undefi
 }
 
 function postCoverUrl(post: BlogPost): string | undefined {
-  return absoluteAssetUrl(post.cover?.url) ?? absoluteAssetUrl(post.coverUrl)
+  const fromApi = absoluteAssetUrl(post.cover?.url) ?? absoluteAssetUrl(post.coverUrl)
+  if (fromApi) {
+    return fromApi
+  }
+  return DEMO_COVER_BY_SLUG[post.slug]
 }
 
 function formatDate(iso?: string) {
