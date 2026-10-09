@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://api.app-prg1.zerops.io/api/rest/public/settings/zerops-yaml-json-schema.json
+#
+# Vite + React SPA. Setups: `prod` (static) and `dev` (SSH workspace).
+
+zerops:
+  - setup: prod
+    build:
+      base: nodejs@24
+      envVariables:
+        VITE_API_URL: ${API_URL}
+      buildCommands:
+        - npm ci --include=dev
+        - npm run build
+      deployFiles:
+        - dist/~
+      cache:
+        - node_modules
+    run:
+      base: static
+
+  - setup: dev
+    build:
+      base: nodejs@24
+      envVariables:
+        VITE_API_URL: ${DEV_API_URL}
+      buildCommands:
+        - npm install
+      deployFiles: ./
+      cache:
+        - node_modules
+    run:
+      base: nodejs@24
+      envVariables:
+        VITE_API_URL: ${DEV_API_URL}
+      start: zsc noop --silent
