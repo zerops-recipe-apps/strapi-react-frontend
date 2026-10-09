@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import coverDeploy from './assets/covers/deploy-strapi-on-zerops.svg'
-import coverHeadless from './assets/covers/headless-cms-react-spa.svg'
-import coverDraft from './assets/covers/draft-to-published.svg'
+import coverDeploy from './assets/covers/deploy-strapi-on-zerops.svg?url'
+import coverHeadless from './assets/covers/headless-cms-react-spa.svg?url'
+import coverDraft from './assets/covers/draft-to-published.svg?url'
 import './App.css'
 
 type SiteInfo = {
