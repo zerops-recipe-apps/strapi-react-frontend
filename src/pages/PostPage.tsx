@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { PostCover } from '../components/PostCover'
+import { SiteHeader } from '../components/SiteHeader'
 import {
   fetchBlogPostBySlug,
   formatDate,
   getApiBase,
-  postCoverUrl,
   type BlogPost,
 } from '../lib/strapi'
+import { estimateReadTime, getPostMeta } from '../lib/postMeta'
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -39,48 +39,69 @@ export function PostPage() {
       .finally(() => setLoading(false))
   }, [slug])
 
+  const meta = post ? getPostMeta(post) : null
   const date = formatDate(post?.publishedAt)
-  const remoteCover = post ? postCoverUrl(post) : undefined
+  const readTime = post ? estimateReadTime(post.body) : null
+  const author = meta?.author ?? 'Zerops'
+  const initial = author.charAt(0).toUpperCase()
 
   return (
-    <div className="shell shell--article">
-      <nav className="breadcrumb">
-        <Link to="/">All posts</Link>
-      </nav>
+    <div className="articles-page">
+      <SiteHeader />
 
-      {loading && <p className="status">Loading post…</p>}
-      {error && (
-        <p className="status status--error">
-          {error}. <Link to="/">Back to home</Link>
-        </p>
-      )}
+      <div className="shell shell--article">
+        <nav className="breadcrumb">
+          <Link to="/">← Articles</Link>
+        </nav>
 
-      {post && !loading && !error && (
-        <article className="article">
-          <header className="article__header">
-            {date && <time className="article__date" dateTime={post.publishedAt}>{date}</time>}
-            <h1>{post.title}</h1>
-            <p className="article__excerpt">{post.excerpt}</p>
-          </header>
+        {loading && <p className="status">Loading post…</p>}
+        {error && (
+          <p className="status status--error">
+            {error}. <Link to="/">Back to articles</Link>
+          </p>
+        )}
 
-          <div className="article__cover">
-            <PostCover slug={post.slug} title={post.title} remoteUrl={remoteCover} />
-          </div>
+        {post && !loading && !error && meta && (
+          <article className="article">
+            <div className="article-hero">
+              <div className="article-card__tags article__tags">
+                {meta.tags.map((tag) => (
+                  <span key={tag} className="article-card__tag">{tag}</span>
+                ))}
+              </div>
 
-          <div className="article__body">
-            {post.body.split(/\n+/).filter(Boolean).map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
+              <header className="article__header">
+                <h1>{post.title}</h1>
+                <p className="article__lead">{post.excerpt}</p>
+              </header>
 
-          <footer className="article__footer">
-            <Link to="/" className="article__back">Back to all posts</Link>
-            <a href={`${apiBase}/admin`} target="_blank" rel="noreferrer">
-              Edit in Strapi admin
-            </a>
-          </footer>
-        </article>
-      )}
+              <footer className="article-card__meta article__meta">
+                <span className="article-card__author">
+                  <span className="article-card__avatar" aria-hidden>{initial}</span>
+                  {author}
+                </span>
+                {date && <time dateTime={post.publishedAt}>{date}</time>}
+                {readTime && <span className="article-card__read">{readTime}</span>}
+              </footer>
+            </div>
+
+            <div className="article__content">
+              <div className="article__body">
+                {post.body.split(/\n+/).filter(Boolean).map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+
+            <footer className="article__footer">
+              <Link to="/">Back to articles</Link>
+              <a href={`${apiBase}/admin`} target="_blank" rel="noreferrer">
+                Edit in Strapi admin
+              </a>
+            </footer>
+          </article>
+        )}
+      </div>
     </div>
   )
 }

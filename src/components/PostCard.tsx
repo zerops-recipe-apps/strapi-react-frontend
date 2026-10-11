@@ -1,32 +1,35 @@
 import { Link } from 'react-router-dom'
-import { PostCover } from './PostCover'
 import type { BlogPost } from '../lib/strapi'
-import { formatDate, postCoverUrl } from '../lib/strapi'
+import { formatDate } from '../lib/strapi'
+import { estimateReadTime, getPostMeta } from '../lib/postMeta'
 
 type PostCardProps = {
   post: BlogPost
-  featured?: boolean
 }
 
-export function PostCard({ post, featured = false }: PostCardProps) {
-  const remoteCover = postCoverUrl(post)
+export function PostCard({ post }: PostCardProps) {
   const date = formatDate(post.publishedAt)
+  const { tags, author } = getPostMeta(post)
+  const readTime = estimateReadTime(`${post.excerpt} ${post.body}`)
+  const initial = author.charAt(0).toUpperCase()
 
   return (
-    <Link
-      to={`/posts/${post.slug}`}
-      className={`post-card post-card--link${featured ? ' post-card--featured' : ''}`}
-    >
-      <div className="post-card__media">
-        <PostCover slug={post.slug} title={post.cover?.alternativeText ?? post.title} remoteUrl={remoteCover} />
+    <Link to={`/posts/${post.slug}`} className="article-card article-card--link">
+      <div className="article-card__tags">
+        {tags.map((tag) => (
+          <span key={tag} className="article-card__tag">{tag}</span>
+        ))}
       </div>
-      <div className="post-card__body">
-        {date && <time className="post-card__date" dateTime={post.publishedAt}>{date}</time>}
-        <h3>{post.title}</h3>
-        <p className="post-card__excerpt">{post.excerpt}</p>
-        <p className="post-card__text">{post.body}</p>
-        <span className="post-card__cta">Read article</span>
-      </div>
+      <h3 className="article-card__title">{post.title}</h3>
+      <p className="article-card__excerpt">{post.excerpt}</p>
+      <footer className="article-card__meta">
+        <span className="article-card__author">
+          <span className="article-card__avatar" aria-hidden>{initial}</span>
+          {author}
+        </span>
+        {date && <time dateTime={post.publishedAt}>{date}</time>}
+        <span className="article-card__read">{readTime}</span>
+      </footer>
     </Link>
   )
 }

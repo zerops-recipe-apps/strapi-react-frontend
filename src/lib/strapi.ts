@@ -20,7 +20,9 @@ export type BlogPost = {
   cover?: StrapiMedia | null
 }
 
-const apiBase = import.meta.env.VITE_API_URL ?? ''
+/** In dev, empty base uses Vite proxy → Strapi (see vite.config.ts). Production needs VITE_API_URL. */
+const apiBase =
+  import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? '' : '')
 
 export function getApiBase() {
   return apiBase
