@@ -4,14 +4,13 @@ import { SiteHeader } from '../components/SiteHeader'
 import {
   fetchBlogPostBySlug,
   formatDate,
-  getApiBase,
+  strapiAdminUrl,
   type BlogPost,
 } from '../lib/strapi'
 import { estimateReadTime, getPostMeta } from '../lib/postMeta'
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>()
-  const apiBase = getApiBase()
   const [post, setPost] = useState<BlogPost | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -95,7 +94,7 @@ export function PostPage() {
 
             <footer className="article__footer">
               <Link to="/">Back to articles</Link>
-              <a href={`${apiBase}/admin`} target="_blank" rel="noreferrer">
+              <a href={strapiAdminUrl()} target="_blank" rel="noreferrer">
                 Edit in Strapi admin
               </a>
             </footer>

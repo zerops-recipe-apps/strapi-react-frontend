@@ -6,6 +6,7 @@ import {
   entityFields,
   fetchJson,
   getApiBase,
+  strapiAdminUrl,
   parseBlogPostList,
   type BlogPost,
   type SiteInfo,
@@ -76,7 +77,7 @@ export function HomePage() {
 
         <footer className="articles-page__footer">
           <span>Content from Strapi — edit in</span>
-          <a href={`${apiBase}/admin`} target="_blank" rel="noreferrer">admin</a>
+          <a href={strapiAdminUrl()} target="_blank" rel="noreferrer">admin</a>
         </footer>
       </div>
     </div>

@@ -28,6 +28,11 @@ export function getApiBase() {
   return apiBase
 }
 
+export function strapiAdminUrl(): string {
+  const base = apiBase.replace(/\/$/, '')
+  return base ? `${base}/admin` : '/admin'
+}
+
 export function entityFields<T extends Record<string, unknown>>(
   raw: Record<string, unknown> | undefined,
 ): T | undefined {
