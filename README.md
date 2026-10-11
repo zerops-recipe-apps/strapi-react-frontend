@@ -1,10 +1,10 @@
 # Strapi + React (frontend)
 
-Vite + React app for [zerops-recipe-apps/strapi-react](https://github.com/zerops-recipe-apps/strapi-react). Deploy with `zeropsSetup: dev` or `prod` from [`zeropsio/recipes/strapi-react`](https://github.com/zeropsio/recipes/tree/main/strapi-react).
+Vite + React app for [zerops-recipe-apps/strapi](https://github.com/zerops-recipe-apps/strapi). Deploy with `zeropsSetup: dev` or `prod` from [`zeropsio/recipes/strapi-react`](https://github.com/zeropsio/recipes/tree/main/strapi-react) (full stack) or point `VITE_API_URL` at any Strapi instance.
 
 Set `VITE_API_URL` to your Strapi public URL for production builds. The page loads **Site Info** from `/api/site-info`.
 
-**Local dev:** run Strapi (`yarn develop` on `:1337` in [strapi-react](https://github.com/zerops-recipe-apps/strapi-react)), then:
+**Local dev:** run Strapi (`yarn develop` on `:1337` in [strapi](https://github.com/zerops-recipe-apps/strapi)), then:
 
 ```bash
 npm run dev    # :5173 — proxies /api to http://127.0.0.1:1337 when VITE_API_URL is unset
